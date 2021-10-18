@@ -1,19 +1,31 @@
-import sys
+import os
+from types import SimpleNamespace
 
 import pytest
+from sqlalchemy_utils import create_database, drop_database
+from yarl import URL
 
-sys.path.append('/home/lenyagolikov/code/yandex/messenger/')
-sys.path.append('/home/lenyagolikov/code/yandex/messenger/messenger/api')
+from messenger.utils.db import DB_URL, make_alembic_config
 
-from messenger.api import create_app
+DB_URL = os.getenv('CI_MESSENGER_DB_URL', 'postgresql' + DB_URL)
 
 
 @pytest.fixture
-async def api_client(aiohttp_client):
-    app = create_app()
-    client = await aiohttp_client(app)
+def postgres():
+    """Создает временную БД для запуска теста"""
+    db_name = 'db_pytest'
+    db_url = str(URL(DB_URL).with_path(db_name))
+    create_database(db_url)
 
     try:
-        yield client
+        yield db_url
     finally:
-        await client.close()
+        drop_database(db_url)
+
+
+@pytest.fixture()
+def alembic_config(postgres):
+    """Создает объект с конфигурацией для alembic, настроенный на временную БД"""
+    cmd_options = SimpleNamespace(config='alembic.ini', name='alembic',
+                                  db_url=postgres, raiseerr=False, x=None)
+    return make_alembic_config(cmd_options)
