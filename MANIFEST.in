@@ -1,0 +1,3 @@
+include messenger/db/alembic.ini
+include requirements*.txt
+include README.md
