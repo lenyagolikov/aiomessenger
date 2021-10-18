@@ -7,7 +7,8 @@ from messenger.utils.db import available_db
 
 async def ping_db(request):
     """Возвращает сообщение о статусе подключения к БД"""
-    available = await available_db()
+    async_session = request.app['db']
+    available = await available_db(async_session)
 
     if not available:
         data = {'message': 'DB is not available'}

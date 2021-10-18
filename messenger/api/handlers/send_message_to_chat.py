@@ -18,13 +18,13 @@ async def send_message_to_chat(request):
     """Валидирует поля, проверяет сессию с клиентом, возвращает статус отправки сообщения"""
     body = await request.text()
     message = SendMessageModel(**request.query, **body)
+    async_session = request.app['db']
 
-    if not await available_db():
+    if not await available_db(async_session):
         await responses.db_not_available()
 
     session = await cookie_storage.load_session(request)
     client_login = session['login']
-    async_session = request.app['db']
     chat_id = request.match_info['chat_id']
 
     try:

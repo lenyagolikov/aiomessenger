@@ -3,8 +3,8 @@ from pathlib import Path
 
 from alembic.config import Config
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.ext.asyncio.session import AsyncSession
 from sqlalchemy.orm import sessionmaker
 
 from messenger.logger import log_db_request
@@ -18,18 +18,9 @@ DB_URL = f'://{POSTGRES_USER}:{POSTGRES_PWD}@{POSTGRES_HOST}/{POSTGRES_DB}'
 
 PROJECT_PATH = Path(__file__).parent.resolve()
 
-engine = create_async_engine('postgresql+asyncpg' + DB_URL)
-
-async_session = sessionmaker(
-    engine,
-    expire_on_commit=False,
-    future=True,
-    class_=AsyncSession
-)
-
 
 @log_db_request
-async def available_db():
+async def available_db(async_session):
     """Возвращает True, если есть подключение к БД. Иначе False"""
     async with async_session() as session:
         try:
@@ -60,3 +51,17 @@ def make_alembic_config(cmd_opts, base_path=PROJECT_PATH) -> Config:
         config.set_main_option('sqlalchemy.url', cmd_opts.db_url)
 
     return config
+
+
+async def setup_db(app, db_url):
+    engine = create_async_engine(db_url)
+    
+    async_session = sessionmaker(
+        engine, expire_on_commit=False, class_=AsyncSession)
+
+    app['db'] = async_session
+
+    try:
+        yield
+    finally:
+        await engine.dispose()

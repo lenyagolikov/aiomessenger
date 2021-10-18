@@ -21,7 +21,7 @@ async def get_messages_from_chat(request):
     async_session = request.app['db']
     user_id = request.headers['user']
 
-    if not await available_db():
+    if not await available_db(async_session):
         return await redirect_to_bot(async_session, user_id)
 
     session = await cookie_storage.load_session(request)

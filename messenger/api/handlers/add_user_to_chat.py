@@ -17,11 +17,11 @@ from messenger.utils import responses
 async def add_user_to_chat(request):
     """Валидирует поля, проверяет сессию клиента и возвращает сообщение о статусе запроса"""
     user = AddUserModel.parse_raw(await request.text())
+    async_session = request.app['db']
 
-    if not await available_db():
+    if not await available_db(async_session):
         await responses.db_not_available()
 
-    async_session = request.app['db']
     session = await cookie_storage.load_session(request)
     client_login = session['login']
     chat_id = request.match_info['chat_id']

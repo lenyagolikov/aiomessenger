@@ -17,11 +17,11 @@ from messenger.utils import responses
 async def create_chat(request):
     """Валидирует поля, проверяет сессию с клиентом и создает чат"""
     chat = CreateChatModel.parse_raw(await request.text())
+    async_session = request.app['db']
 
-    if not await available_db():
+    if not await available_db(async_session):
         await responses.db_not_available()
 
-    async_session = request.app['db']
     session = await cookie_storage.load_session(request)
     client_login = session['login']
     chat_id = await add_chat_to_db(async_session, chat.name, client_login)

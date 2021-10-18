@@ -15,7 +15,7 @@ async def registration(request):
     fields = RegisterModel.parse_raw(await request.text())
     async_session = request.app['db']
 
-    if not await available_db():
+    if not await available_db(async_session):
         await responses.db_not_available()
 
     if not await add_client_to_db(async_session, fields.login, fields.password):

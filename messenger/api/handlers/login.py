@@ -17,7 +17,7 @@ async def login(request):
     fields = LoginModel.parse_raw(await request.text())
     async_session = request.app['db']
 
-    if not await available_db():
+    if not await available_db(async_session):
         await responses.db_not_available()
 
     if not await correct_login_and_password(async_session, fields.login, fields.password):
