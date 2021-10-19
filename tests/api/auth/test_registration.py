@@ -23,12 +23,12 @@ async def test_registration_successful(api_client, fields):
 @pytest.mark.parametrize(
     "fields",
     [
-        {},  # empty fields
-        {"password": "1234"},  # not login
-        {"login": "NewUser"},  # not password
-        {"login": "1", "password": "1234"},  # short login
-        {"login": "NewUser1", "password": "1"},  # short password
-        {"login": "", "password": ""},  # empty login and empty password,
+        {},
+        {"password": "1234"},
+        {"login": "NewUser"},
+        {"login": "1", "password": "1234"},
+        {"login": "NewUser1", "password": "1"},
+        {"login": "", "password": ""},
     ],
 )
 async def test_registration_bad_params(api_client, fields):

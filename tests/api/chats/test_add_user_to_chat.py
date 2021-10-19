@@ -1,43 +1,52 @@
+from http import HTTPStatus
+
 import pytest
 
 
 @pytest.mark.parametrize(
-    "data",
+    "fields",
     [
-        {"user_name": "new user13"},
-        {"user_name": "новый юзер"},
-        {"user_name": "new-user2"},
-        {"user_name": "новый_юзер"},
-        {"user_name": "юзер3", "лишнее поле": "лишнее поле"},
-        {"user_name": "юзер2", "user_name": "юзер4"},
+        {"user_name": "allison"},
+        {"user_name": "allison 13", "лишнее поле": "лишнее поле"},
+        {"user_name": "allison_13", "user_name": "allison_100"},
     ],
 )
-@pytest.mark.status_201
-async def test_successful_add_user_to_chat(api_client, data):
-    resp = await api_client.post("/v1/chats/{chat_id}/users", json=data)
-    status_code = resp.status
-    expected_status_code = 201
-    assert (
-        status_code == expected_status_code
-    ), f"Expected status code {expected_status_code}, but taken {status_code}"
+async def test_add_user_to_existing_chat(new_chat, api_client, fields):
+    response = await api_client.post(f"/v1/chats/{new_chat}/users", json=fields)
+    assert response.status == HTTPStatus.CREATED
+
+    body = await response.json()
+    assert "user_id" in body
 
 
 @pytest.mark.parametrize(
-    "data",
+    "fields",
     [
+        {"user_name": "allison"},
+        {"user_name": "allison 13", "лишнее поле": "лишнее поле"},
+        {"user_name": "allison_13", "user_name": "allison_100"},
+    ],
+)
+async def test_add_user_to_not_existing_chat(login, api_client, fields):
+    response = await api_client.post("/v1/chats/bad_chat/users", json=fields)
+    assert response.status == HTTPStatus.NOT_FOUND
+
+    body = await response.json()
+    assert "message" in body
+
+
+@pytest.mark.parametrize(
+    "fields",
+    [
+        {},
         {"user_name1": "new user"},
         {"user_name": ""},
         {"": "new-user"},
-        {"user-name": "новый_юзер"},
-        {"новое поле": "юзер", "лишнее поле": "лишнее поле"},
-        {},
     ],
 )
-@pytest.mark.status_400
-async def test_bad_add_user_to_chat(api_client, data):
-    resp = await api_client.post("/v1/chats/{chat_id}/users", json=data)
-    status_code = resp.status
-    expected_status_code = 400
-    assert (
-        status_code == expected_status_code
-    ), f"Expected status code {expected_status_code}, but taken {status_code}"
+async def test_add_user_to_chat_bad_params(new_chat, api_client, fields):
+    response = await api_client.post(f"/v1/chats/{new_chat}/users", json=fields)
+    assert response.status == HTTPStatus.BAD_REQUEST
+
+    body = await response.json()
+    assert "message" in body

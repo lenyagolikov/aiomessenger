@@ -6,7 +6,7 @@ import pytest
 @pytest.mark.parametrize(
     "fields",
     [
-        {"login": "allison", "password": "1234"},  # correct fields
+        {"login": "allison", "password": "1234"},
     ],
 )
 async def test_login_successful(registration, api_client, fields):
@@ -20,12 +20,12 @@ async def test_login_successful(registration, api_client, fields):
 @pytest.mark.parametrize(
     "fields",
     [
-        {},  # empty fields
-        {"password": "1234"},  # not login
-        {"login": "NewUser"},  # not password
-        {"login": "1", "password": "1234"},  # short login
-        {"login": "NewUser1", "password": "1"},  # short password
-        {"login": "", "password": ""},  # both empty,
+        {},
+        {"password": "1234"},
+        {"login": "NewUser"},
+        {"login": "1", "password": "1234"},
+        {"login": "NewUser1", "password": "1"},
+        {"login": "", "password": ""},
     ],
 )
 async def test_login_bad_params(api_client, fields):
@@ -39,9 +39,9 @@ async def test_login_bad_params(api_client, fields):
 @pytest.mark.parametrize(
     "fields",
     [
-        {"login": "allison1", "password": "1234"},  # incorrect login
-        {"login": "allison", "password": "12345"},  # incorrect password
-        {"login": "lenyagolikov", "password": "lenyagolikov"},  # both incorrect
+        {"login": "allison1", "password": "1234"},
+        {"login": "allison", "password": "12345"},
+        {"login": "lenyagolikov", "password": "lenyagolikov"},
     ],
 )
 async def test_login_incorrect_fields(registration, api_client, fields):

@@ -7,9 +7,6 @@ import pytest
     "fields",
     [
         {"chat_name": "new chat"},
-        {"chat_name": "новый чат"},
-        {"chat_name": "new-chat"},
-        {"chat_name": "новый_чат"},
         {"chat_name": "чатик", "лишнее поле": "лишнее поле"},
         {"chat_name": "чатик", "chat_name": "чатик2"},
     ],
@@ -25,12 +22,10 @@ async def test_create_chat_successful(login, api_client, fields):
 @pytest.mark.parametrize(
     "fields",
     [
-        {},  # empty fields
-        {"chat_name1": "new chat"},  # incorrect key
-        {"chat_name": ""},  # incorrect value
-        {"": "new-chat"},  # empty key
-        {"chat-name": "новый_чат"},  # incorrect key
-        {"новое поле": "чатик", "лишнее поле": "лишнее поле"},  # 2 incorrect keys
+        {},
+        {"chat_name1": "new chat"},
+        {"chat_name": ""},
+        {"": "new-chat"},
     ],
 )
 async def test_create_chat_bad_params(login, api_client, fields):
@@ -44,8 +39,8 @@ async def test_create_chat_bad_params(login, api_client, fields):
 @pytest.mark.parametrize(
     "fields",
     [
-        {"chat_name": "new chat"},  # correct fields, but not auth
-        {"chat_name": "новый чат"},  # correct fields, but not auth
+        {"chat_name": "new chat"},
+        {"chat_name": "новый чат"},
     ],
 )
 async def test_create_chat_without_auth(api_client, fields):
