@@ -14,11 +14,11 @@ async def postgres():
     Подготавливает тестовую БД и возвращает его URL
     """
     engine = create_async_engine(DB_URL)
-    
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
-    
+
     return DB_URL
 
 
@@ -36,20 +36,6 @@ async def api_client(aiohttp_client, postgres):
     Создает тестовый экземпляр приложения для выполнения запросов
     """
     app = await create_app(postgres)
-    client = await aiohttp_client(app)
-
-    try:
-        yield client
-    finally:
-        await client.close()
-
-
-@pytest.fixture
-async def api_client_without_db(aiohttp_client, bad_postgres):
-    """
-    Создает тестовый экземпляр приложения без доступа к БД
-    """
-    app = await create_app(bad_postgres)
     client = await aiohttp_client(app)
 
     try:
