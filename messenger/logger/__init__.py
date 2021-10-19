@@ -7,7 +7,7 @@ from .settings import LOGGER_CONFIG
 
 logging.config.dictConfig(LOGGER_CONFIG)
 
-log = logging.getLogger('log')
+log = logging.getLogger("log")
 
 
 def execution_time(start_time):
@@ -19,6 +19,7 @@ def execution_time(start_time):
 
 def log_request(handler):
     """Записывает в логи информацию об клиентском запросе и серверном ответе"""
+
     async def inner(*args, **kwargs):
         start_time = time.time()
         request = args[0]
@@ -29,14 +30,17 @@ def log_request(handler):
         execution_time = round(Decimal(execution_time), 3)
 
         log.debug(
-            f'{execution_time} ms - {request.method} [{response.status}]: {request.url}')
+            f"{execution_time} ms - {request.method} [{response.status}]: {request.url}"
+        )
 
         return response
+
     return inner
 
 
 def log_db_request(handler):
     """Записывает в логи информацию о запросе в БД"""
+
     async def inner(*args, **kwargs):
         handler_name = handler.__name__
         start_time = time.time()

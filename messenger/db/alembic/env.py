@@ -59,11 +59,11 @@ def run_migrations_online():
 
     """
     ini_section = config.get_section(config.config_ini_section)
-    db_path = context.get_x_argument(as_dictionary=True).get('dbPath')
+    db_path = context.get_x_argument(as_dictionary=True).get("dbPath")
 
     if db_path:
-        ini_section['sqlalchemy.url'] = db_path
-    
+        ini_section["sqlalchemy.url"] = db_path
+
     connectable = engine_from_config(
         ini_section,
         prefix="sqlalchemy.",
@@ -71,9 +71,7 @@ def run_migrations_online():
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

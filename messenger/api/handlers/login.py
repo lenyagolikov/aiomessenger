@@ -13,18 +13,22 @@ from messenger.utils import responses
 
 
 async def login(request):
-    """Валидирует поля, сохраняет сессию с клиентом в случае успешной аутентификации"""
+    """
+    Валидирует поля, сохраняет сессию с клиентом в случае успешной аутентификации
+    """
     fields = LoginModel.parse_raw(await request.text())
-    async_session = request.app['db']
+    async_session = request.app["db"]
 
     if not await available_db(async_session):
         await responses.db_not_available()
 
-    if not await correct_login_and_password(async_session, fields.login, fields.password):
-        data = {'message': 'Login or password is not correct'}
+    if not await correct_login_and_password(
+        async_session, fields.login, fields.password
+    ):
+        data = {"message": "Login or password is not correct"}
         return web.json_response(data=data, status=HTTPStatus.UNAUTHORIZED)
 
-    data = {'login': fields.login}
+    data = {"login": fields.login}
     response = web.json_response(data=data, status=HTTPStatus.OK)
 
     await save_client_session_id(request, response, fields.login)
@@ -51,5 +55,5 @@ async def correct_login_and_password(async_session, login, password):
 async def save_client_session_id(request, response, login):
     """Сохраняет сессию в хранилище и в куках"""
     session = await new_session(request)
-    session['login'] = login
+    session["login"] = login
     await cookie_storage.save_session(request, response, session)

@@ -17,13 +17,13 @@ from messenger.utils import responses
 async def create_chat(request):
     """Валидирует поля, проверяет сессию с клиентом и создает чат"""
     chat = CreateChatModel.parse_raw(await request.text())
-    async_session = request.app['db']
+    async_session = request.app["db"]
 
     if not await available_db(async_session):
         await responses.db_not_available()
 
     session = await cookie_storage.load_session(request)
-    client_login = session['login']
+    client_login = session["login"]
     chat_id = await add_chat_to_db(async_session, chat.name, client_login)
 
     data = {"chat_id": chat_id}
@@ -38,8 +38,7 @@ async def add_chat_to_db(async_session, chat_name, client_login):
         client = await session.execute(stmt.where(Client.login == client_login))
         client = client.scalar()
 
-        chat = Chat(chat_id=str(uuid4()),
-                    chat_name=chat_name, client_id=client)
+        chat = Chat(chat_id=str(uuid4()), chat_name=chat_name, client_id=client)
         client.chats.append(chat)
 
         session.add(chat)

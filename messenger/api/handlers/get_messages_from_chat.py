@@ -16,21 +16,24 @@ from messenger.utils import responses
 
 @login_required
 async def get_messages_from_chat(request):
-    """Валидирует поля, проверяет сессию с клиентом, права доступа и возвращает сообщения"""
+    """
+    Валидирует поля, проверяет сессию с клиентом, права доступа и возвращает сообщения
+    """
     message = GetMessagesModel.parse_obj(request.query)
-    async_session = request.app['db']
-    user_id = request.headers['user']
+    async_session = request.app["db"]
+    user_id = request.headers["user"]
 
     if not await available_db(async_session):
         return await redirect_to_bot(async_session, user_id)
 
     session = await cookie_storage.load_session(request)
-    client_login = session.get('login', 'admin')
-    chat_id = request.match_info['chat_id']
+    client_login = session.get("login", "admin")
+    chat_id = request.match_info["chat_id"]
 
     try:
         await permissions_for_read_messages(
-            async_session, user_id, chat_id, client_login)
+            async_session, user_id, chat_id, client_login
+        )
     except ValueError as err:
         await responses.resourse_not_found(err)
 
@@ -45,8 +48,8 @@ async def get_messages_from_chat(request):
     cursor = min(cursor, len(messages))
 
     data = {
-        'messages': [{'text': msg.text} for msg in messages],
-        'next': {'iterator': str(cursor + 1)}
+        "messages": [{"text": msg.text} for msg in messages],
+        "next": {"iterator": str(cursor + 1)},
     }
     return web.json_response(data=data, status=HTTPStatus.OK)
 
@@ -61,10 +64,10 @@ async def get_messages_from_db(async_session, chat_id, from_, cursor):
         chat = chat.scalar()
 
         if not chat:
-            raise ValueError('chat not found')
+            raise ValueError("chat not found")
 
         messages = chat.messages
-    return messages[from_ - 1:cursor]
+    return messages[from_ - 1 : cursor]
 
 
 @log_db_request
@@ -75,10 +78,10 @@ async def permissions_for_read_messages(async_session, user_id, chat_id, client_
         user = user.scalar()
 
         if not user:
-            raise ValueError('user not found')
+            raise ValueError("user not found")
 
         if user.client_id != client_login:
-            raise ValueError('user not found')
+            raise ValueError("user not found")
 
         if user.chat_id != chat_id:
-            raise ValueError('chat not found')
+            raise ValueError("chat not found")

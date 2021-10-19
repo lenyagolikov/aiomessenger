@@ -7,11 +7,11 @@ class UserSettings:
         self.timezone = timezone
 
     def __repr__(self):
-        return f'{{timezone: {self.timezone}}}'
+        return f"{{timezone: {self.timezone}}}"
 
 
-user1 = UserSettings('allison', 1)
-user2 = UserSettings('lenyagolikov', 2)
-user3 = UserSettings('rachik', 3)
+user1 = UserSettings("allison", 1)
+user2 = UserSettings("lenyagolikov", 2)
+user3 = UserSettings("rachik", 3)
 
 users = [user1, user2, user3]

@@ -8,15 +8,15 @@ class MegaHandler(logging.Handler):
 
     def emit(self, record):
         message = self.format(record)
-        with open(self.filename, 'a') as file:
-            file.write(message + '\n')
+        with open(self.filename, "a") as file:
+            file.write(message + "\n")
 
 
 class DebugFilter(logging.Filter):
     def filter(self, record):
-        return record.levelname == 'DEBUG'
+        return record.levelname == "DEBUG"
 
 
 class ErrorFilter(logging.Filter):
     def filter(self, record):
-        return record.levelname == 'ERROR'
+        return record.levelname == "ERROR"

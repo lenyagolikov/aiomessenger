@@ -15,20 +15,21 @@ from messenger.utils import responses
 
 @login_required
 async def add_user_to_chat(request):
-    """Валидирует поля, проверяет сессию клиента и возвращает сообщение о статусе запроса"""
+    """
+    Валидирует поля, проверяет сессию клиента и возвращает сообщение о статусе запроса
+    """
     user = AddUserModel.parse_raw(await request.text())
-    async_session = request.app['db']
+    async_session = request.app["db"]
 
     if not await available_db(async_session):
         await responses.db_not_available()
 
     session = await cookie_storage.load_session(request)
-    client_login = session['login']
-    chat_id = request.match_info['chat_id']
+    client_login = session["login"]
+    chat_id = request.match_info["chat_id"]
 
     try:
-        user_id = await add_user_to_db(
-            async_session, chat_id, user.name, client_login)
+        user_id = await add_user_to_db(async_session, chat_id, user.name, client_login)
     except ValueError as err:
         await responses.resourse_not_found(err)
 
@@ -38,21 +39,25 @@ async def add_user_to_chat(request):
 
 @log_db_request
 async def add_user_to_db(async_session, chat_id, user_name, client_login):
-    """Добавляет пользователя в БД и возвращает его ID. Выбрасывает ValueError, если чата нет"""
+    """
+    Добавляет пользователя в БД и возвращает его ID.
+    Выбрасывает ValueError, если чата нет
+    """
     async with async_session() as session:
         stmt = select(Chat).options(selectinload(Chat.users))
         chat = await session.execute(stmt.where(Chat.chat_id == chat_id))
         chat = chat.scalar()
 
         if not chat:
-            raise ValueError('chat not found')
+            raise ValueError("chat not found")
 
         stmt = select(Client).options(selectinload(Client.users))
         client = await session.execute(stmt.where(Client.login == client_login))
         client = client.scalar()
 
-        user = User(user_id=str(uuid4()), user_name=user_name,
-                    chat_id=chat, client_id=client)
+        user = User(
+            user_id=str(uuid4()), user_name=user_name, chat_id=chat, client_id=client
+        )
 
         chat.users.append(user)
         client.users.append(user)

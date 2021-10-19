@@ -13,16 +13,16 @@ from messenger.utils import responses
 async def registration(request):
     """Валидирует поля, возвращает сообщение о статусе регистрации"""
     fields = RegisterModel.parse_raw(await request.text())
-    async_session = request.app['db']
+    async_session = request.app["db"]
 
     if not await available_db(async_session):
         await responses.db_not_available()
 
     if not await add_client_to_db(async_session, fields.login, fields.password):
-        data = {'message': 'Login already exists'}
+        data = {"message": "Login already exists"}
         return web.json_response(data=data, status=HTTPStatus.CONFLICT)
 
-    data = {'login': fields.login}
+    data = {"login": fields.login}
     return web.json_response(data=data, status=HTTPStatus.CREATED)
 
 

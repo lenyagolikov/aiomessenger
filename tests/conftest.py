@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 from messenger.db.models import Base
 
-DB_URL = 'postgresql+asyncpg://lenyagolikov:1234@localhost/db_pytest'
+DB_URL = "postgresql+asyncpg://lenyagolikov:1234@localhost/db_pytest"
 
 
 @pytest.fixture

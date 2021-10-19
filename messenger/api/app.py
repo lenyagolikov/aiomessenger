@@ -14,9 +14,9 @@ async def create_app(db_url):
     app = Application(
         middlewares=[session_middleware(cookie_storage), error_middleware]
     )
-    
+
     setup_routes(app)
-    
+
     app.cleanup_ctx.append(partial(setup_db, db_url=db_url))
 
     return app
