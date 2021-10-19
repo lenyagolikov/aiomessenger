@@ -9,7 +9,7 @@ import pytest
     {'login': 'NewUser3', 'password': '12345'},
     {'login': 'NewUser4', 'password': '12345'},
 ])
-async def test_register_successful(api_client, fields):
+async def test_registration_successful(api_client, fields):
     response = await api_client.post('/v1/auth/register', json=fields)
     assert response.status == HTTPStatus.CREATED
 
@@ -25,7 +25,7 @@ async def test_register_successful(api_client, fields):
     {'login': 'NewUser1', 'password': '1'},  # short password
     {'login': '', 'password': ''}  # empty login and empty password,
 ])
-async def test_register_bad_params(api_client, fields):
+async def test_registration_bad_params(api_client, fields):
     response = await api_client.post('/v1/auth/register', json=fields)
     assert response.status == HTTPStatus.BAD_REQUEST
 
@@ -33,7 +33,7 @@ async def test_register_bad_params(api_client, fields):
     assert body['message'] == 'bad-parameters'
 
 
-async def test_register_client_already_exists(api_client):
+async def test_registration_client_already_exists(api_client):
     fields = {'login': 'allison', 'password': '1234'}
     await api_client.post('/v1/auth/register', json=fields)
     response = await api_client.post('/v1/auth/register', json=fields)
