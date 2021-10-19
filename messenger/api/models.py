@@ -16,7 +16,7 @@ class SendMessageModel(BaseModel):
 
 class GetMessagesModel(BaseModel):
     limit: int = Field(ge=1, le=1000)
-    from_: str = Field(alias="from", default="1")
+    from_: int = Field(alias="from", default=1)
 
 
 class RegisterModel(BaseModel):
