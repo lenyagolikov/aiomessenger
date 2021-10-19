@@ -22,7 +22,7 @@ async def registration(request):
         data = {'message': 'Login already exists'}
         return web.json_response(data=data, status=HTTPStatus.CONFLICT)
 
-    data = {'message': 'Registration is successful'}
+    data = {'login': fields.login}
     return web.json_response(data=data, status=HTTPStatus.CREATED)
 
 

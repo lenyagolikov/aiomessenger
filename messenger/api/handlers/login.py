@@ -24,7 +24,7 @@ async def login(request):
         data = {'message': 'Login or password is not correct'}
         return web.json_response(data=data, status=HTTPStatus.UNAUTHORIZED)
 
-    data = {'message': 'Login is successful'}
+    data = {'login': fields.login}
     response = web.json_response(data=data, status=HTTPStatus.OK)
 
     await save_client_session_id(request, response, fields.login)

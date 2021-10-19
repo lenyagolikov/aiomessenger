@@ -11,11 +11,12 @@ async def logout(request):
 
     if session.empty:
         data = {'message': 'Already logout'}
-        return web.json_response(data=data, status=HTTPStatus.BAD_REQUEST)
-
+        return web.json_response(data=data, status=HTTPStatus.OK)
+    
+    login = session['login']
     session.invalidate()
 
-    data = {'message': 'Logout is successful'}
+    data = {'login': login}
     response = web.json_response(data=data, status=HTTPStatus.OK)
 
     await cookie_storage.save_session(request, response, session)
