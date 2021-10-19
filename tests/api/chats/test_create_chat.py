@@ -8,7 +8,6 @@ import pytest
     [
         {"chat_name": "new chat"},
         {"chat_name": "чатик", "лишнее поле": "лишнее поле"},
-        {"chat_name": "чатик", "chat_name": "чатик2"},
     ],
 )
 async def test_create_chat(login, api_client, fields):

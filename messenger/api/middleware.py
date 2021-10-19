@@ -14,7 +14,7 @@ async def error_middleware(request, handler):
 
     try:
         return await handler(request)
-    except ValidationError as err:
+    except ValidationError:
         data = {"message": "bad-parameters"}
         status = HTTPStatus.BAD_REQUEST
     except HTTPNotFound as err:
