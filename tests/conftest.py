@@ -12,11 +12,13 @@ async def postgres():
     engine = create_async_engine(DB_URL)
 
     async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
 
-    try:
-        yield DB_URL
-    finally:
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.drop_all)
-        await engine.dispose()
+    return DB_URL
+
+
+@pytest.fixture
+async def bad_postgres():
+    """Предоставляет несуществующую БД"""
+    return DB_URL + "not found"
