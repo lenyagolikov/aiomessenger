@@ -10,8 +10,8 @@ import pytest
         {"message": "Hello again"},
     ],
 )
-async def test_send_to_existing_chat(user_in_chat, api_client, fields):
-    chat_id, user_id = user_in_chat
+async def test_send_to_existing_chat(chat_user, api_client, fields):
+    chat_id, user_id = chat_user
     params = {"user_id": user_id}
     response = await api_client.post(
         f"/v1/chats/{chat_id}/messages", params=params, json=fields
@@ -29,8 +29,8 @@ async def test_send_to_existing_chat(user_in_chat, api_client, fields):
         {"message": "Hello again"},
     ],
 )
-async def test_send_to_not_existing_chat(user_in_chat, api_client, fields):
-    _, user_id = user_in_chat
+async def test_send_to_not_existing_chat(chat_user, api_client, fields):
+    _, user_id = chat_user
     params = {"user_id": user_id}
     response = await api_client.post(
         "/v1/chats/bad_chat/messages", params=params, json=fields
@@ -48,8 +48,8 @@ async def test_send_to_not_existing_chat(user_in_chat, api_client, fields):
         {"message": ""},
     ],
 )
-async def test_bad_params(user_in_chat, api_client, fields):
-    chat_id, user_id = user_in_chat
+async def test_bad_params(chat_user, api_client, fields):
+    chat_id, user_id = chat_user
     params = {"user_id": user_id}
     response = await api_client.post(
         f"/v1/chats/{chat_id}/messages", params=params, json=fields
