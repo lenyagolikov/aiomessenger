@@ -17,7 +17,7 @@ async def api_client(aiohttp_client, postgres):
 
 @pytest.fixture
 async def api_client_without_db(aiohttp_client, bad_postgres):
-    """Создает клиента для приложения"""
+    """Создает клиента для приложения без доступа к БД"""
     app = await create_app(bad_postgres)
     client = await aiohttp_client(app)
 
