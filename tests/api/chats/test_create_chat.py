@@ -1,8 +1,10 @@
+from http import HTTPStatus
+
 import pytest
 
 
 @pytest.mark.parametrize(
-    "data",
+    "fields",
     [
         {"chat_name": "new chat"},
         {"chat_name": "новый чат"},
@@ -12,30 +14,43 @@ import pytest
         {"chat_name": "чатик", "chat_name": "чатик2"},
     ],
 )
-@pytest.mark.status_201
-async def test_successful_create_chat(api_client, data):
-    resp = await api_client.post("/v1/chats", json=data)
-    status_code = resp.status
-    expected_status_code = 201
-    assert status_code == expected_status_code
+async def test_create_chat_successful(login, api_client, fields):
+    response = await api_client.post("/v1/chats", json=fields)
+    assert response.status == HTTPStatus.CREATED
+
+    body = await response.json()
+    assert "chat_id" in body
 
 
 @pytest.mark.parametrize(
-    "data",
+    "fields",
     [
-        {"chat_name1": "new chat"},
-        {"chat_name": ""},
-        {"": "new-chat"},
-        {"chat-name": "новый_чат"},
-        {"новое поле": "чатик", "лишнее поле": "лишнее поле"},
-        {},
+        {},  # empty fields
+        {"chat_name1": "new chat"},  # incorrect key
+        {"chat_name": ""},  # incorrect value
+        {"": "new-chat"},  # empty key
+        {"chat-name": "новый_чат"},  # incorrect key
+        {"новое поле": "чатик", "лишнее поле": "лишнее поле"},  # 2 incorrect keys
     ],
 )
-@pytest.mark.status_400
-async def test_bad_create_chat(api_client, data):
-    resp = await api_client.post("/v1/chats", json=data)
-    status_code = resp.status
-    expected_status_code = 400
-    assert (
-        status_code == expected_status_code
-    ), f"Expected status code {expected_status_code}, but taken {status_code}"
+async def test_create_chat_bad_params(login, api_client, fields):
+    response = await api_client.post("/v1/chats", json=fields)
+    assert response.status == HTTPStatus.BAD_REQUEST
+
+    body = await response.json()
+    assert "message" in body
+
+
+@pytest.mark.parametrize(
+    "fields",
+    [
+        {"chat_name": "new chat"},  # correct fields, but not auth
+        {"chat_name": "новый чат"},  # correct fields, but not auth
+    ],
+)
+async def test_create_chat_without_auth(api_client, fields):
+    response = await api_client.post("/v1/chats", json=fields)
+    assert response.status == HTTPStatus.UNAUTHORIZED
+
+    body = await response.json()
+    assert "message" in body
