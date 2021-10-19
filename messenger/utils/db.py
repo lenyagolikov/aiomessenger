@@ -16,7 +16,7 @@ POSTGRES_DB = os.getenv("POSTGRES_DB", "messenger")
 
 DB_URL = f'://{POSTGRES_USER}:{POSTGRES_PWD}@{POSTGRES_HOST}/{POSTGRES_DB}'
 
-PROJECT_PATH = Path(__file__).parent.resolve()
+PROJECT_PATH = Path(__file__).parent.parent.resolve()
 
 
 @log_db_request
