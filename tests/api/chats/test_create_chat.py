@@ -11,7 +11,7 @@ import pytest
         {"chat_name": "чатик", "chat_name": "чатик2"},
     ],
 )
-async def test_create_chat_successful(login, api_client, fields):
+async def test_create_chat(login, api_client, fields):
     response = await api_client.post("/v1/chats", json=fields)
     assert response.status == HTTPStatus.CREATED
 

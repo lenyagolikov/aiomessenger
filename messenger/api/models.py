@@ -10,7 +10,7 @@ class AddUserModel(BaseModel):
 
 
 class SendMessageModel(BaseModel):
-    text: str = Field(alias="message")
+    text: str = Field(alias="message", min_length=1)
     user: str = Field(alias="user_id")
 
 

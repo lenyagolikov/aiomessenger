@@ -1,42 +1,63 @@
+from http import HTTPStatus
+
 import pytest
 
 
 @pytest.mark.parametrize(
-    "params, data",
+    "fields",
     [
-        ({"user_id": "user"}, {"message": "Hello"}),
-        ({"user_id": "another-user"}, {"message": "Bye"}),
-        ({"user_id": 135}, {"message": 135}),
-        ({"user_id": 0}, {"message": 201}),
+        {"message": "Hello"},
+        {"message": "Hello again"},
     ],
 )
-@pytest.mark.status_201
-async def test_successful_send_message_to_chat(api_client, params, data):
-    resp = await api_client.post(
-        "/v1/chats/{chat_id}/messages", params=params, json=data
+async def test_send_message_to_existing_chat(
+        new_user_in_chat, api_client, fields):
+    chat_id, user_id = new_user_in_chat
+    params = {"user_id": user_id}
+    response = await api_client.post(
+        f"/v1/chats/{chat_id}/messages", params=params, json=fields
     )
-    status_code = resp.status
-    expected_status_code = 201
-    assert (
-        status_code == expected_status_code
-    ), f"Expected status code {expected_status_code}, but taken {status_code}"
+    assert response.status == HTTPStatus.CREATED
+
+    body = await response.json()
+    assert "message_id" in body
 
 
 @pytest.mark.parametrize(
-    "params, data",
+    "fields",
     [
-        ({"user_i": "user"}, {"message": "Hello"}),
-        ({"user_id": "another-user"}, {"essage": "Bye"}),
-        ({"user_id": 0}, {"message": [4, 5, 6]}),
+        {"message": "Hello"},
+        {"message": "Hello again"},
     ],
 )
-@pytest.mark.status_400
-async def test_bad_send_message_to_chat(api_client, params, data):
-    resp = await api_client.post(
-        "/v1/chats/{chat_id}/messages", params=params, json=data
+async def test_send_message_to_not_existing_chat(
+        new_user_in_chat, api_client, fields):
+    _, user_id = new_user_in_chat
+    params = {"user_id": user_id}
+    response = await api_client.post(
+        "/v1/chats/bad_chat/messages", params=params, json=fields
     )
-    status_code = resp.status
-    expected_status_code = 400
-    assert (
-        status_code == expected_status_code
-    ), f"Expected status code {expected_status_code}, but taken {status_code}"
+    assert response.status == HTTPStatus.NOT_FOUND
+
+    body = await response.json()
+    assert "message" in body
+
+
+@pytest.mark.parametrize(
+    "fields",
+    [
+        {"": "Hello"},
+        {"message": ""},
+    ],
+)
+async def test_send_message_to_chat_bad_params(
+        new_user_in_chat, api_client, fields):
+    chat_id, user_id = new_user_in_chat
+    params = {"user_id": user_id}
+    response = await api_client.post(
+        f"/v1/chats/{chat_id}/messages", params=params, json=fields
+    )
+    assert response.status == HTTPStatus.BAD_REQUEST
+
+    body = await response.json()
+    assert "message" in body
