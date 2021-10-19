@@ -9,7 +9,7 @@ import pytest
         {"login": "allison", "password": "1234"},
     ],
 )
-async def test_login_successful(registration, api_client, fields):
+async def test_successful(register, api_client, fields):
     response = await api_client.post("/v1/auth/login", json=fields)
     assert response.status == HTTPStatus.OK
 
@@ -28,12 +28,12 @@ async def test_login_successful(registration, api_client, fields):
         {"login": "", "password": ""},
     ],
 )
-async def test_login_bad_params(api_client, fields):
+async def test_bad_params(api_client, fields):
     response = await api_client.post("/v1/auth/login", json=fields)
     assert response.status == HTTPStatus.BAD_REQUEST
 
     body = await response.json()
-    assert body["message"] == "bad-parameters"
+    assert "message" in body
 
 
 @pytest.mark.parametrize(
@@ -44,9 +44,9 @@ async def test_login_bad_params(api_client, fields):
         {"login": "lenyagolikov", "password": "lenyagolikov"},
     ],
 )
-async def test_login_incorrect_fields(registration, api_client, fields):
+async def test_incorrect_login_and_password(register, api_client, fields):
     response = await api_client.post("/v1/auth/login", json=fields)
     assert response.status == HTTPStatus.UNAUTHORIZED
 
     body = await response.json()
-    assert body["message"] == "Login or password is not correct"
+    assert "message" in body
