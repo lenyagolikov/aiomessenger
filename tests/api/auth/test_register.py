@@ -13,6 +13,9 @@ async def test_register_successful(api_client, fields):
     response = await api_client.post('/v1/auth/register', json=fields)
     assert response.status == HTTPStatus.CREATED
 
+    body = await response.json()
+    assert body['login'] == fields['login']
+
 
 @pytest.mark.parametrize('fields', [
     {},  # empty fields
@@ -26,9 +29,15 @@ async def test_register_bad_params(api_client, fields):
     response = await api_client.post('/v1/auth/register', json=fields)
     assert response.status == HTTPStatus.BAD_REQUEST
 
+    body = await response.json()
+    assert body['message'] == 'bad-parameters'
+
 
 async def test_register_client_already_exists(api_client):
     fields = {'login': 'allison', 'password': '1234'}
     await api_client.post('/v1/auth/register', json=fields)
     response = await api_client.post('/v1/auth/register', json=fields)
     assert response.status == HTTPStatus.CONFLICT
+
+    body = await response.json()
+    assert body['message'] == 'Login already exists'
