@@ -9,5 +9,5 @@ async def db_not_available():
 
 
 async def resourse_not_found(message):
-    data = {"message": message}
+    data = {"message": str(message)}
     return web.json_response(data=data, status=HTTPStatus.NOT_FOUND)

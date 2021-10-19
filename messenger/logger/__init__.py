@@ -50,7 +50,7 @@ def log_db_request(handler):
         except ValueError as err:
             result = execution_time(start_time)
             log.error(f'{result} ms - "{handler_name}" - {err}')
-            raise ValueError
+            raise ValueError(str(err))
         else:
             result = execution_time(start_time)
             log.debug(f'{result} ms - DB_SESSION: "{handler_name}" - {response}')
