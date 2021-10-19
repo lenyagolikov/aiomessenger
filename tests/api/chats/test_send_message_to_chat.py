@@ -10,7 +10,7 @@ import pytest
         {"message": "Hello again"},
     ],
 )
-async def test_send_message_to_existing_chat(user_in_chat, api_client, fields):
+async def test_send_to_existing_chat(user_in_chat, api_client, fields):
     chat_id, user_id = user_in_chat
     params = {"user_id": user_id}
     response = await api_client.post(
@@ -29,7 +29,7 @@ async def test_send_message_to_existing_chat(user_in_chat, api_client, fields):
         {"message": "Hello again"},
     ],
 )
-async def test_send_message_to_not_existing_chat(user_in_chat, api_client, fields):
+async def test_send_to_not_existing_chat(user_in_chat, api_client, fields):
     _, user_id = user_in_chat
     params = {"user_id": user_id}
     response = await api_client.post(
@@ -48,7 +48,7 @@ async def test_send_message_to_not_existing_chat(user_in_chat, api_client, field
         {"message": ""},
     ],
 )
-async def test_send_message_to_chat_bad_params(user_in_chat, api_client, fields):
+async def test_bad_params(user_in_chat, api_client, fields):
     chat_id, user_id = user_in_chat
     params = {"user_id": user_id}
     response = await api_client.post(

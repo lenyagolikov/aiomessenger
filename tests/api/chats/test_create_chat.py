@@ -10,7 +10,7 @@ import pytest
         {"chat_name": "чатик", "лишнее поле": "лишнее поле"},
     ],
 )
-async def test_create_chat(login, api_client, fields):
+async def test_create_successful(login, api_client, fields):
     response = await api_client.post("/v1/chats", json=fields)
     assert response.status == HTTPStatus.CREATED
 
@@ -27,7 +27,7 @@ async def test_create_chat(login, api_client, fields):
         {"": "new-chat"},
     ],
 )
-async def test_create_chat_bad_params(login, api_client, fields):
+async def test_bad_params(login, api_client, fields):
     response = await api_client.post("/v1/chats", json=fields)
     assert response.status == HTTPStatus.BAD_REQUEST
 
@@ -42,7 +42,7 @@ async def test_create_chat_bad_params(login, api_client, fields):
         {"chat_name": "новый чат"},
     ],
 )
-async def test_create_chat_without_auth(api_client, fields):
+async def test_create_without_auth(api_client, fields):
     response = await api_client.post("/v1/chats", json=fields)
     assert response.status == HTTPStatus.UNAUTHORIZED
 
