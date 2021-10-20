@@ -6,7 +6,7 @@ from messenger.api.app import create_app
 
 
 @pytest.fixture
-async def migrated_postgres(alembic_config, postgres):
+def migrated_postgres(alembic_config, postgres):
     """
     Возвращает URL к БД с примененными миграциями
     """
