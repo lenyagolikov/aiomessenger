@@ -17,21 +17,14 @@ async def postgres(loop):
     db_url = str(URL(MESSENGER_DB_URL).with_path(db_name))
 
     conn = await asyncpg.connect(
-        database='template1',
-        user='postgres',
-        password='1234',
-        host='localhost'
+        database="template1", user="postgres", password="1234", host="localhost"
     )
-    await conn.execute(
-        f'CREATE DATABASE "{db_name}" OWNER "lenyagolikov"'
-    )
+    await conn.execute(f'CREATE DATABASE "{db_name}" OWNER "lenyagolikov"')
 
     try:
         yield db_url
     finally:
-        await conn.execute(
-            f'DROP DATABASE "{db_name}"'
-        )
+        await conn.execute(f'DROP DATABASE "{db_name}"')
         await conn.close()
 
 

@@ -10,7 +10,7 @@ async def migrated_postgres(alembic_config, postgres):
     """
     Возвращает URL к БД с примененными миграциями
     """
-    upgrade(alembic_config, 'head')
+    upgrade(alembic_config, "head")
     return postgres
 
 

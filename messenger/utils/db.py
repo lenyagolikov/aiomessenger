@@ -14,7 +14,9 @@ POSTGRES_PWD = os.getenv("POSTGRES_PWD", "1234")
 POSTGRES_HOST = os.getenv("POSTGRES_HOSTS", "localhost").split(",")[-1]
 POSTGRES_DB = os.getenv("POSTGRES_DB", "messenger")
 
-MESSENGER_DB_URL = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PWD}@{POSTGRES_HOST}/{POSTGRES_DB}"
+MESSENGER_DB_URL = (
+    f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PWD}@{POSTGRES_HOST}/{POSTGRES_DB}"
+)
 
 PROJECT_PATH = Path(__file__).parent.parent.resolve()
 
