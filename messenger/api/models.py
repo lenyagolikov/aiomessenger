@@ -27,3 +27,7 @@ class RegisterModel(BaseModel):
 class LoginModel(BaseModel):
     login: str = Field(min_length=2, max_length=255)
     password: str = Field(min_length=4, max_length=255)
+
+
+class CreateTaskModel(BaseModel):
+    text: str = Field(alias="message", min_length=3)
