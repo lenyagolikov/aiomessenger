@@ -11,7 +11,7 @@ async def ping_db(request):
     async_session = request.app["db"]
 
     if not await available_db(async_session):
-        return await responses.db_not_available()
+        return responses.db_not_available()
 
     data = {"message": "DB is available"}
     return web.json_response(data=data, status=HTTPStatus.OK)

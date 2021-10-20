@@ -23,7 +23,7 @@ async def send_message_to_chat(request):
     async_session = request.app["db"]
 
     if not await available_db(async_session):
-        return await responses.db_not_available()
+        return responses.db_not_available()
 
     session = await cookie_storage.load_session(request)
     client_login = session["login"]
@@ -34,7 +34,7 @@ async def send_message_to_chat(request):
             async_session, chat_id, message.user, message.text, client_login
         )
     except ValueError as err:
-        return await responses.resourse_not_found(err)
+        return responses.resourse_not_found(err)
 
     data = {"message_id": message_id}
     return web.json_response(data=data, status=HTTPStatus.CREATED)

@@ -32,7 +32,7 @@ async def get_messages_from_chat(request):
     try:
         await permissions_for_read_messages(async_session, chat_id, client_login)
     except ValueError as err:
-        return await responses.resourse_not_found(err)
+        return responses.resourse_not_found(err)
 
     from_ = int(message.from_)
     cursor = message.limit + from_ - 1

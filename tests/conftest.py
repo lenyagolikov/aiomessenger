@@ -23,7 +23,7 @@ async def postgres():
 
 
 @pytest.fixture
-async def bad_postgres():
+def bad_postgres():
     """
     Возвращает URL несуществующей БД
     """

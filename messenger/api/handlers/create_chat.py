@@ -20,7 +20,7 @@ async def create_chat(request):
     async_session = request.app["db"]
 
     if not await available_db(async_session):
-        return await responses.db_not_available()
+        return responses.db_not_available()
 
     session = await cookie_storage.load_session(request)
     client_login = session["login"]

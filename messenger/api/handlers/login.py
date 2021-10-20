@@ -20,7 +20,7 @@ async def login(request):
     async_session = request.app["db"]
 
     if not await available_db(async_session):
-        return await responses.db_not_available()
+        return responses.db_not_available()
 
     if not await correct_login_and_password(
         async_session, fields.login, fields.password

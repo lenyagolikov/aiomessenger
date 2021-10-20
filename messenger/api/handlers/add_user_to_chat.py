@@ -22,7 +22,7 @@ async def add_user_to_chat(request):
     async_session = request.app["db"]
 
     if not await available_db(async_session):
-        return await responses.db_not_available()
+        return responses.db_not_available()
 
     session = await cookie_storage.load_session(request)
     client_login = session["login"]
@@ -31,7 +31,7 @@ async def add_user_to_chat(request):
     try:
         user_id = await add_user_to_db(async_session, chat_id, user.name, client_login)
     except ValueError as err:
-        return await responses.resourse_not_found(err)
+        return responses.resourse_not_found(err)
 
     data = {"user_id": user_id}
     return web.json_response(data=data, status=HTTPStatus.CREATED)
