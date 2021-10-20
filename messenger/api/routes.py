@@ -1,14 +1,14 @@
-from messenger.api.handlers.create_chat import create_chat
-from messenger.api.handlers.add_user_to_chat import add_user_to_chat
-from messenger.api.handlers.get_messages_from_chat import get_messages_from_chat
-from messenger.api.handlers.send_message_to_chat import send_message_to_chat
+from messenger.api.common.ping_app import ping_app
+from messenger.api.common.ping_db import ping_db
 
-from messenger.api.handlers.ping import ping_app
-from messenger.api.handlers.ping_db import ping_db
+from messenger.api.v1.auth.registration import registration
+from messenger.api.v1.auth.login import login
+from messenger.api.v1.auth.logout import logout
 
-from messenger.api.handlers.registration import registration
-from messenger.api.handlers.login import login
-from messenger.api.handlers.logout import logout
+from messenger.api.v1.chats.create_chat import create_chat
+from messenger.api.v1.chats.add_user_to_chat import add_user_to_chat
+from messenger.api.v1.chats.get_messages_from_chat import get_messages_from_chat
+from messenger.api.v1.chats.send_message_to_chat import send_message_to_chat
 
 
 def setup_routes(app):
