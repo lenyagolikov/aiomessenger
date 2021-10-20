@@ -1,44 +1,54 @@
+from types import SimpleNamespace
+from uuid import uuid4
+
+import asyncpg
 import pytest
+from yarl import URL
 
-from sqlalchemy.ext.asyncio import create_async_engine
-
-from messenger.api.app import create_app
-from messenger.db.models import Base
-
-DB_URL = "postgresql+asyncpg://lenyagolikov:1234@localhost/db_pytest"
+from messenger.utils.db import MESSENGER_DB_URL, make_alembic_config
 
 
 @pytest.fixture
-async def postgres():
+async def postgres(loop):
     """
-    Подготавливает тестовую БД и возвращает его URL
+    Создает временную БД для запуска теста
     """
-    engine = create_async_engine(DB_URL)
+    db_name = uuid4().hex
+    db_url = str(URL(MESSENGER_DB_URL).with_path(db_name))
 
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
+    conn = await asyncpg.connect(
+        database='template1',
+        user='postgres',
+        password='1234',
+        host='localhost'
+    )
+    await conn.execute(
+        f'CREATE DATABASE "{db_name}" OWNER "lenyagolikov"'
+    )
 
-    return DB_URL
+    try:
+        yield db_url
+    finally:
+        await conn.execute(
+            f'DROP DATABASE "{db_name}"'
+        )
+        await conn.close()
 
 
 @pytest.fixture
 def bad_postgres():
     """
-    Возвращает URL несуществующей БД
+    Возвращает URL к несуществующей БД
     """
-    return DB_URL + "not found"
+    return MESSENGER_DB_URL + "not found"
 
 
 @pytest.fixture
-async def api_client(aiohttp_client, postgres):
+def alembic_config(postgres):
     """
-    Создает тестовый экземпляр приложения для выполнения запросов
+    Создает объект с конфигурацией для alembic, настроенный на временную БД.
     """
-    app = await create_app(postgres)
-    client = await aiohttp_client(app)
-
-    try:
-        yield client
-    finally:
-        await client.close()
+    cmd_options = SimpleNamespace(
+        config="alembic.ini", name="alembic", db_url=postgres, raiseerr=False, x=None
+    )
+    return make_alembic_config(cmd_options)

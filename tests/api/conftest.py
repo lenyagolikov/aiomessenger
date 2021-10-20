@@ -1,5 +1,32 @@
 import pytest
 
+from alembic.command import upgrade
+
+from messenger.api.app import create_app
+
+
+@pytest.fixture
+async def migrated_postgres(alembic_config, postgres):
+    """
+    Возвращает URL к БД с примененными миграциями
+    """
+    upgrade(alembic_config, 'head')
+    return postgres
+
+
+@pytest.fixture
+async def api_client(aiohttp_client, migrated_postgres):
+    """
+    Создает тестовый экземпляр приложения для выполнения запросов
+    """
+    app = await create_app(migrated_postgres)
+    client = await aiohttp_client(app)
+
+    try:
+        yield client
+    finally:
+        await client.close()
+
 
 @pytest.fixture
 async def register(api_client):

@@ -24,7 +24,7 @@ async def test_successful(register, api_client, fields):
         {"password": "1234"},
         {"login": "NewUser"},
         {"login": "1", "password": "1234"},
-        {"login": "NewUser1", "password": "1"},
+        {"login": "NewUser", "password": "1"},
         {"login": "", "password": ""},
     ],
 )
