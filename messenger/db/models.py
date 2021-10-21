@@ -97,7 +97,7 @@ class Task(Base):
     client_id = Column(ForeignKey("clients.login", ondelete="CASCADE"))
     status = Column(String, nullable=False)
 
-    messages = relationship("Messages",
+    messages = relationship("Message",
                             secondary=tasks_results)
 
     def __repr__(self):
