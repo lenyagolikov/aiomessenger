@@ -1,3 +1,4 @@
+import asyncio
 from http import HTTPStatus
 from uuid import uuid4
 
@@ -34,6 +35,8 @@ async def create_task(request):
 
     task_id = await add_task_to_db(async_session, client_login)
     
+    asyncio.create_task(search_messages_in_chats(async_session, task_id, message.text, chats))
+
     data = {"task_id": task_id}
     return web.json_response(data=data, status=HTTPStatus.CREATED)
 
@@ -167,17 +170,20 @@ async def search_messages_in_chats(async_session, task_id, message, chats):
         stmt = select(Task).options(selectinload(Task.messages))
         task = await session.execute(stmt.where(Task.task_id == task_id))
         task = task.scalar()
+        
         task.status = "IN PROCESS"
         session.add(task)
         await session.commit()
 
         messages = await session.execute(
             select(Message)
-            .filter(Message.text.match(message), Message.chat_id.in_(chats))
+            .where(Message.text.contains(message), Message.chat_id.in_(chats))
             .limit(1000)
         )
-
+        messages = messages.scalars().all()
         task.messages.extend(messages)
+        
         task.status = "SUCCESS"
+        print(task.messages)
         session.add(task)
         await session.commit()
