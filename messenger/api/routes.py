@@ -11,7 +11,7 @@ from messenger.api.v1.chats.get_messages_from_chat import get_messages_from_chat
 from messenger.api.v1.chats.search_messages_in_chats import (
     create_task,
     get_status_task,
-    get_messages,
+    get_result_task,
 )
 from messenger.api.v1.chats.send_message_to_chat import send_message_to_chat
 
@@ -27,7 +27,7 @@ def setup_routes(app):
 
     app.router.add_post("/v1/chats/search", create_task)
     app.router.add_get("/v1/chats/search/status/{task_id}", get_status_task)
-    app.router.add_get("/v1/chats/search/{task_id}/messages", get_messages)
+    app.router.add_get("/v1/chats/search/{task_id}/messages", get_result_task)
 
     app.router.add_post("/v1/auth/register", registration)
     app.router.add_post("/v1/auth/login", login)
