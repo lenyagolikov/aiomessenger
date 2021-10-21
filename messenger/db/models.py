@@ -16,8 +16,8 @@ Base = declarative_base()
 
 
 tasks_results = Table('tasks_results', Base.metadata,
-                      Column('task_id', ForeignKey('tasks.id')),
-                      Column('message_id', ForeignKey('messages.id'))
+                      Column('task_id', ForeignKey('tasks.task_id')),
+                      Column('message_id', ForeignKey('messages.message_id'))
                       )
 
 
@@ -64,8 +64,8 @@ class User(Base):
     user_name = Column(String, nullable=False)
     date_created = Column(DateTime, default=datetime.utcnow)
 
-    chat_id = Column(ForeignKey("chats.id", ondelete="CASCADE"))
-    client_id = Column(ForeignKey("clients.id", ondelete="CASCADE"))
+    chat_id = Column(ForeignKey("chats.chat_id", ondelete="CASCADE"))
+    client_id = Column(ForeignKey("clients.login", ondelete="CASCADE"))
 
     messages = relationship("Message", backref="user")
     settings = relationship("UserSettings", backref="user")
@@ -78,22 +78,23 @@ class Message(Base):
     __tablename__ = "messages"
 
     id = Column(BigInteger, primary_key=True)
+    message_id = Column(String, unique=True, nullable=False)
     text = Column(String, nullable=False)
     date_created = Column(DateTime, default=datetime.utcnow)
 
-    chat_id = Column(ForeignKey("chats.id", ondelete="CASCADE"))
+    chat_id = Column(ForeignKey("chats.chat_id", ondelete="CASCADE"))
     user_id = Column(ForeignKey("users.id", ondelete="SET NULL"))
 
     def __repr__(self):
         return f"{{Message: {self.text}}}"
 
 
-class Tasks(Base):
+class Task(Base):
     __tablename__ = "tasks"
 
     id = Column(BigInteger, primary_key=True)
     task_id = Column(String, unique=True, nullable=False)
-    client_id = Column(ForeignKey("clients.id", ondelete="CASCADE"))
+    client_id = Column(ForeignKey("clients.login", ondelete="CASCADE"))
     status = Column(String, nullable=False)
 
     messages = relationship("Messages",

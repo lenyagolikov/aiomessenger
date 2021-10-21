@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from uuid import uuid4
 
 from aiohttp import web
 from sqlalchemy.future import select
@@ -62,11 +63,11 @@ async def add_message_to_db(async_session, chat_id, user_id, text, client_login)
         if not chat or user.chat_id != chat_id:
             raise ValueError("chat not found")
 
-        message = Message(text=text, user_id=user, chat_id=chat)
+        message = Message(text=text, message_id=str(uuid4()), user_id=user, chat_id=chat)
 
         chat.messages.append(message)
         user.messages.append(message)
 
-        session.add(message)
+        session.add_all([chat, message, user])
         await session.commit()
     return len(chat.messages)

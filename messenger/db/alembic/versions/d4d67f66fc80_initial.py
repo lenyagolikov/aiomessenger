@@ -1,8 +1,8 @@
 """Initial
 
-Revision ID: a6600fa4b792
+Revision ID: d4d67f66fc80
 Revises: 
-Create Date: 2021-10-21 03:20:02.068199
+Create Date: 2021-10-21 03:56:42.563414
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'a6600fa4b792'
+revision = 'd4d67f66fc80'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -39,9 +39,9 @@ def upgrade():
     op.create_table('tasks',
     sa.Column('id', sa.BigInteger(), nullable=False),
     sa.Column('task_id', sa.String(), nullable=False),
-    sa.Column('client_id', sa.BigInteger(), nullable=True),
+    sa.Column('client_id', sa.String(), nullable=True),
     sa.Column('status', sa.String(), nullable=False),
-    sa.ForeignKeyConstraint(['client_id'], ['clients.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['client_id'], ['clients.login'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('task_id')
     )
@@ -50,22 +50,24 @@ def upgrade():
     sa.Column('user_id', sa.String(), nullable=False),
     sa.Column('user_name', sa.String(), nullable=False),
     sa.Column('date_created', sa.DateTime(), nullable=True),
-    sa.Column('chat_id', sa.BigInteger(), nullable=True),
-    sa.Column('client_id', sa.BigInteger(), nullable=True),
-    sa.ForeignKeyConstraint(['chat_id'], ['chats.id'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['client_id'], ['clients.id'], ondelete='CASCADE'),
+    sa.Column('chat_id', sa.String(), nullable=True),
+    sa.Column('client_id', sa.String(), nullable=True),
+    sa.ForeignKeyConstraint(['chat_id'], ['chats.chat_id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['client_id'], ['clients.login'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('user_id', 'chat_id')
+    sa.UniqueConstraint('client_id', 'chat_id')
     )
     op.create_table('messages',
     sa.Column('id', sa.BigInteger(), nullable=False),
+    sa.Column('message_id', sa.String(), nullable=False),
     sa.Column('text', sa.String(), nullable=False),
     sa.Column('date_created', sa.DateTime(), nullable=True),
-    sa.Column('chat_id', sa.BigInteger(), nullable=True),
+    sa.Column('chat_id', sa.String(), nullable=True),
     sa.Column('user_id', sa.BigInteger(), nullable=True),
-    sa.ForeignKeyConstraint(['chat_id'], ['chats.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['chat_id'], ['chats.chat_id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='SET NULL'),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('message_id')
     )
     op.create_table('user_settings',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -75,10 +77,10 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('tasks_results',
-    sa.Column('task_id', sa.BigInteger(), nullable=True),
-    sa.Column('message_id', sa.BigInteger(), nullable=True),
-    sa.ForeignKeyConstraint(['message_id'], ['messages.id'], ),
-    sa.ForeignKeyConstraint(['task_id'], ['tasks.id'], )
+    sa.Column('task_id', sa.String(), nullable=True),
+    sa.Column('message_id', sa.String(), nullable=True),
+    sa.ForeignKeyConstraint(['message_id'], ['messages.message_id'], ),
+    sa.ForeignKeyConstraint(['task_id'], ['tasks.task_id'], )
     )
     # ### end Alembic commands ###
 

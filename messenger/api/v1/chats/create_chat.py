@@ -41,6 +41,6 @@ async def add_chat_to_db(async_session, chat_name, client_login):
         chat = Chat(chat_id=str(uuid4()), chat_name=chat_name, client_id=client)
         client.chats.append(chat)
 
-        session.add(chat)
+        session.add_all([chat, client])
         await session.commit()
     return chat.chat_id
