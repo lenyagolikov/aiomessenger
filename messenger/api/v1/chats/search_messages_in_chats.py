@@ -182,6 +182,7 @@ async def search_messages_in_chats(async_session, task_id, message, chats):
             select(Message)
             .where(Message.text.contains(message), Message.chat_id.in_(chats))
             .limit(1000)
+            .order_by(Message.date_created.desc())
         )
         messages = messages.scalars().all()
         task.messages.extend(messages)
