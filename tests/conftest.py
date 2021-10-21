@@ -14,12 +14,13 @@ async def postgres(loop):
     Создает временную БД для запуска теста
     """
     db_name = uuid4().hex
+    db_user = "lenyagolikov"
     db_url = str(URL(MESSENGER_DB_URL).with_path(db_name))
 
     conn = await asyncpg.connect(
         database="template1", user="postgres", password="1234", host="localhost"
     )
-    await conn.execute(f'CREATE DATABASE "{db_name}" OWNER "lenyagolikov"')
+    await conn.execute(f'CREATE DATABASE "{db_name}" OWNER "{db_user}"')
 
     try:
         yield db_url
