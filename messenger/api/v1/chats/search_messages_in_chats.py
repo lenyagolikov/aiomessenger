@@ -16,7 +16,7 @@ from messenger.utils.db import available_db
 @login_required
 async def create_task(request):
     """
-    Запускает процесс поиска сообщений в чатах, в которых состоит пользователь
+    Создает таску поиска сообщений в чатах, в которых состоит пользователь
     """
     message = CreateTaskModel.parse_raw(await request.text())
     async_session = request.app["db"]
