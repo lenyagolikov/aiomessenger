@@ -57,7 +57,7 @@ class Chat(Base):
 class User(Base):
     __tablename__ = "users"
 
-    __table_args__ = (UniqueConstraint("user_id", "chat_id"),)
+    __table_args__ = (UniqueConstraint("client_id", "chat_id"),)
 
     id = Column(BigInteger, primary_key=True)
     user_id = Column(String, nullable=False)
