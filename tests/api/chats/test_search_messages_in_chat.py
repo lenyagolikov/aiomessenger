@@ -47,17 +47,31 @@ async def test_get_status_not_exist_task(task, api_client):
     assert "message" in body
 
 
-async def test_get_result_exist_task(task, api_client):
-    response = await api_client.get(f"/v1/chats/search/bad_task/messages")
-    assert response.status == HTTPStatus.NOT_FOUND
-    # TODO limit from
+@pytest.mark.parametrize(
+    "params",
+    [
+        {"limit": 5},
+        {"limit": 5, "from": 2},
+    ],
+)
+async def test_get_result_exist_task(task, api_client, params):
+    response = await api_client.get(f"/v1/chats/search/{task}/messages", params=params)
+    assert response.status == HTTPStatus.OK
+
     body = await response.json()
-    assert "message" in body
+    assert "messages" in body and "next" in body
 
 
-async def test_get_result_not_exist_task(task, api_client):
-    response = await api_client.get(f"/v1/chats/search/bad_task/messages")
+@pytest.mark.parametrize(
+    "params",
+    [
+        {"limit": 5},
+        {"limit": 5, "from": 2},
+    ],
+)
+async def test_get_result_not_exist_task(task, api_client, params):
+    response = await api_client.get(f"/v1/chats/search/bad_task/messages", params=params)
     assert response.status == HTTPStatus.NOT_FOUND
-    # TODO limit from
+
     body = await response.json()
     assert "message" in body
