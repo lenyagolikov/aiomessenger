@@ -180,7 +180,7 @@ async def search_messages_in_chats(async_session, task_id, message, chats):
 
         messages = await session.execute(
             select(Message)
-            .where(Message.text.contains(message), Message.chat_id.in_(chats))
+            .where(Message.text.ilike(f"%{message}%"))
             .limit(1000)
             .order_by(Message.date_created.desc())
         )
