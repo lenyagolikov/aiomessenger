@@ -31,7 +31,7 @@ async def test_create_task_without_chats(chat, api_client, fields):
     assert "message" in body
 
 
-async def test_get_status_exist_task(task, api_client):
+async def test_get_status_exists_task(task, api_client):
     response = await api_client.get(f"/v1/chats/search/status/{task}")
     assert response.status == HTTPStatus.OK
 
@@ -39,7 +39,7 @@ async def test_get_status_exist_task(task, api_client):
     assert "status" in body
 
 
-async def test_get_status_not_exist_task(task, api_client):
+async def test_get_status_not_exists_task(task, api_client):
     response = await api_client.get(f"/v1/chats/search/status/bad_task")
     assert response.status == HTTPStatus.NOT_FOUND
 
@@ -54,7 +54,7 @@ async def test_get_status_not_exist_task(task, api_client):
         {"limit": 5, "from": 2},
     ],
 )
-async def test_get_result_exist_task(task, api_client, params):
+async def test_get_result_exists_task(task, api_client, params):
     response = await api_client.get(f"/v1/chats/search/{task}/messages", params=params)
     assert response.status == HTTPStatus.OK
 
@@ -69,8 +69,10 @@ async def test_get_result_exist_task(task, api_client, params):
         {"limit": 5, "from": 2},
     ],
 )
-async def test_get_result_not_exist_task(task, api_client, params):
-    response = await api_client.get(f"/v1/chats/search/bad_task/messages", params=params)
+async def test_get_result_not_exists_task(task, api_client, params):
+    response = await api_client.get(
+        f"/v1/chats/search/bad_task/messages", params=params
+    )
     assert response.status == HTTPStatus.NOT_FOUND
 
     body = await response.json()

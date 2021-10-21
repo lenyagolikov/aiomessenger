@@ -57,7 +57,7 @@ async def get_messages_from_db(async_session, chat_id, from_, cursor):
         chat = await session.execute(stmt.where(Chat.chat_id == chat_id))
         chat = chat.scalar()
         messages = chat.messages
-    return messages[from_ - 1: cursor]
+    return messages[from_ - 1 : cursor]
 
 
 @log_db_request
