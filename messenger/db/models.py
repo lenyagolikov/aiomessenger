@@ -8,10 +8,17 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     String,
+    Table,
     UniqueConstraint,
 )
 
 Base = declarative_base()
+
+
+tasks_results = Table('tasks_results', Base.metadata,
+                      Column('task_id', ForeignKey('tasks.id')),
+                      Column('message_id', ForeignKey('messages.id'))
+                      )
 
 
 class Client(Base):
@@ -23,6 +30,7 @@ class Client(Base):
     date_created = Column(DateTime, default=datetime.utcnow)
 
     chats = relationship("Chat", backref="client")
+    tasks = relationship("Task", backref="client")
     users = relationship("User", backref="client")
 
     def __repr__(self):
@@ -56,8 +64,8 @@ class User(Base):
     user_name = Column(String, nullable=False)
     date_created = Column(DateTime, default=datetime.utcnow)
 
-    chat_id = Column(ForeignKey("chats.chat_id", ondelete="CASCADE"))
-    client_id = Column(ForeignKey("clients.login", ondelete="CASCADE"))
+    chat_id = Column(ForeignKey("chats.id", ondelete="CASCADE"))
+    client_id = Column(ForeignKey("clients.id", ondelete="CASCADE"))
 
     messages = relationship("Message", backref="user")
     settings = relationship("UserSettings", backref="user")
@@ -73,11 +81,26 @@ class Message(Base):
     text = Column(String, nullable=False)
     date_created = Column(DateTime, default=datetime.utcnow)
 
-    chat_id = Column(ForeignKey("chats.chat_id", ondelete="CASCADE"))
+    chat_id = Column(ForeignKey("chats.id", ondelete="CASCADE"))
     user_id = Column(ForeignKey("users.id", ondelete="SET NULL"))
 
     def __repr__(self):
         return f"{{Message: {self.text}}}"
+
+
+class Tasks(Base):
+    __tablename__ = "tasks"
+
+    id = Column(BigInteger, primary_key=True)
+    task_id = Column(String, unique=True, nullable=False)
+    client_id = Column(ForeignKey("clients.id", ondelete="CASCADE"))
+    status = Column(String, nullable=False)
+
+    messages = relationship("Messages",
+                            secondary=tasks_results)
+
+    def __repr__(self):
+        return f"{{Task: {self.client_id} - {self.status}}}"
 
 
 class UserSettings(Base):
