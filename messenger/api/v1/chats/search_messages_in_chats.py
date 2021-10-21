@@ -167,6 +167,7 @@ async def search_messages_in_chats(async_session, task_id, message, chats):
     Процесс поиска сообщений в чатах для указанной таски
     """
     async with async_session() as session:
+        await asyncio.sleep(10) # чтобы следить статус таска для дебага
         stmt = select(Task).options(selectinload(Task.messages))
         task = await session.execute(stmt.where(Task.task_id == task_id))
         task = task.scalar()
@@ -182,8 +183,8 @@ async def search_messages_in_chats(async_session, task_id, message, chats):
         )
         messages = messages.scalars().all()
         task.messages.extend(messages)
-        
+
+        await asyncio.sleep(10) # чтобы следить статус таска для дебага
         task.status = "SUCCESS"
-        print(task.messages)
         session.add(task)
         await session.commit()
