@@ -12,9 +12,11 @@ from messenger.utils.auth import cookie_storage, login_required
 from messenger.utils.cache import invalidate_cache
 from messenger.utils.db import available_db
 from messenger.utils import responses
+from messenger.utils.rate_limit import rate_limit
 
 
 @login_required
+@rate_limit
 async def send_message_to_chat(request):
     """
     Валидирует поля, проверяет сессию с клиентом, возвращает статус отправки сообщения

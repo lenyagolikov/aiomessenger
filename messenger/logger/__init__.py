@@ -49,7 +49,7 @@ def log_db_request(handler):
             response = await handler(*args, **kwargs)
         except ValueError as err:
             result = execution_time(start_time)
-            log.error(f'{result} ms - "{handler_name}" - {err}')
+            log.debug(f'{result} ms - "{handler_name}" - {err}')
             raise ValueError(str(err))
         else:
             result = execution_time(start_time)
