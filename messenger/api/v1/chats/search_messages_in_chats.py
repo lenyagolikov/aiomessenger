@@ -35,9 +35,7 @@ async def create_task(request):
 
     task_id = await add_task_to_db(async_session, client_login)
 
-    asyncio.create_task(
-        search_messages_in_chats(async_session, task_id, message.text, chats)
-    )
+    asyncio.create_task(task_with_timeout(async_session, task_id, message.text, chats))
 
     data = {"task_id": task_id}
     return web.json_response(data=data, status=HTTPStatus.CREATED)
@@ -164,12 +162,29 @@ async def get_messages_from_task(async_session, task_id, from_, cursor):
     return messages[from_ - 1 : cursor]
 
 
+async def task_with_timeout(async_session, task_id, message, chats):
+    """
+    Контролирует выполнение таски, если время превышено - переводит таску
+    в FAILED и запускает сборщик мусора для него
+    """
+    try:
+        await asyncio.wait_for(
+            search_messages_in_chats(async_session, task_id, message, chats), timeout=1
+        )
+    except asyncio.TimeoutError:
+        async with async_session() as session:
+            task = await session.execute(select(Task).where(Task.task_id == task_id))
+            task = task.scalar()
+            task.status = "FAILED"
+            await session.commit()
+            asyncio.create_task(clean_task_from_db(async_session, task_id))
+
+
 async def search_messages_in_chats(async_session, task_id, message, chats):
     """
     Процесс поиска сообщений в чатах для указанной таски
     """
     async with async_session() as session:
-        await asyncio.sleep(5)  # чтобы следить статус таска для дебага
         stmt = select(Task).options(selectinload(Task.messages))
         task = await session.execute(stmt.where(Task.task_id == task_id))
         task = task.scalar()
@@ -184,21 +199,19 @@ async def search_messages_in_chats(async_session, task_id, message, chats):
             .limit(1000)
             .order_by(Message.date_created.desc())
         )
+
         messages = messages.scalars().all()
         task.messages.extend(messages)
-
-        await asyncio.sleep(5)  # чтобы следить статус таска для дебага
         task.status = "SUCCESS"
 
         session.add(task)
         await session.commit()
-
         asyncio.create_task(clean_task_from_db(async_session, task_id))
 
 
 async def clean_task_from_db(async_session, task_id):
     """
-    Фоновым процессом чистит отработавший таск
+    Фоновым процессом чистит отработавший таск (SUCCESS/FAILED)
     """
     await asyncio.sleep(60)
 
