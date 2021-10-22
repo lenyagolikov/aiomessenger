@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from aiohttp import web
 
-from .user_settings import get_user_settings
+from messenger.utils.user_settings import get_user_settings
 
 
 async def redirect_to_bot(async_session, user_id):

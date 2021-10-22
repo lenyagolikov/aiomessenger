@@ -11,6 +11,7 @@ class RateLimiter:
     Чтобы не ограничить возможности добросовестного клиента, токены восстанавливаются,
     в зависимости от времени последнего запроса
     """
+
     RATE = 1
     MAX_TOKENS = 10
 
@@ -43,6 +44,7 @@ def rate_limit(handler):
     """
     Ограничивает количество запросов в секунду
     """
+
     async def inner(*args, **kwargs):
         request = args[0]
 
@@ -56,4 +58,5 @@ def rate_limit(handler):
             await clients[client_login].make_request()
 
         return await handler(*args, **kwargs)
+
     return inner
