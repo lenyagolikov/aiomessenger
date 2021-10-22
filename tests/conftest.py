@@ -25,7 +25,7 @@ async def postgres(loop):
     try:
         yield db_url
     finally:
-        await conn.execute(f'DROP DATABASE "{db_name}"')
+        await conn.execute(f'DROP DATABASE "{db_name}" WITH (FORCE)')
         await conn.close()
 
 

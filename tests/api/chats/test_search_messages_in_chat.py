@@ -20,6 +20,22 @@ async def test_create_task_with_chats(chat_user, api_client, fields):
 @pytest.mark.parametrize(
     "fields",
     [
+        {},
+        {"messag": "allison"},
+        {"message": "ok"}
+    ],
+)
+async def test_create_task_with_chats_bad_params(chat_user, api_client, fields):
+    response = await api_client.post("/v1/chats/search", json=fields)
+    assert response.status == HTTPStatus.BAD_REQUEST
+
+    body = await response.json()
+    assert "message" in body
+
+
+@pytest.mark.parametrize(
+    "fields",
+    [
         {"message": "allison"},
     ],
 )
@@ -74,6 +90,25 @@ async def test_get_result_not_exists_task(task, api_client, params):
         f"/v1/chats/search/bad_task/messages", params=params
     )
     assert response.status == HTTPStatus.NOT_FOUND
+
+    body = await response.json()
+    assert "message" in body
+
+
+@pytest.mark.parametrize(
+    "params",
+    [
+        {},
+        {"limi": 5},
+        {"limit": 0},
+        {"limit": 1001}
+    ],
+)
+async def test_get_result_exist_task_bad_params(task, api_client, params):
+    response = await api_client.get(
+        f"/v1/chats/search/{task}/messages", params=params
+    )
+    assert response.status == HTTPStatus.BAD_REQUEST
 
     body = await response.json()
     assert "message" in body
