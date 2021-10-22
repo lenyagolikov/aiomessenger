@@ -161,7 +161,7 @@ async def get_messages_from_task(async_session, task_id, from_, cursor):
         task = await session.execute(stmt.where(Task.task_id == task_id))
         task = task.scalar()
         messages = task.messages
-    return messages[from_ - 1: cursor]
+    return messages[from_ - 1 : cursor]
 
 
 async def search_messages_in_chats(async_session, task_id, message, chats):
@@ -189,8 +189,10 @@ async def search_messages_in_chats(async_session, task_id, message, chats):
 
         await asyncio.sleep(5)  # чтобы следить статус таска для дебага
         task.status = "SUCCESS"
+
         session.add(task)
         await session.commit()
+
         asyncio.create_task(clean_task_from_db(async_session, task_id))
 
 
