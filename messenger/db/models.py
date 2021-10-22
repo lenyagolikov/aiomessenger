@@ -18,8 +18,8 @@ Base = declarative_base()
 tasks_results = Table(
     "tasks_results",
     Base.metadata,
-    Column("task_id", ForeignKey("tasks.task_id")),
-    Column("message_id", ForeignKey("messages.message_id")),
+    Column("task_id", ForeignKey("tasks.task_id", ondelete="CASCADE")),
+    Column("message_id", ForeignKey("messages.message_id", ondelete="CASCADE")),
 )
 
 
