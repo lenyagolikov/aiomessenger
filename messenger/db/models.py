@@ -99,7 +99,7 @@ class Task(Base):
     client_id = Column(ForeignKey("clients.login", ondelete="CASCADE"))
     status = Column(String, nullable=False)
 
-    messages = relationship("Message", secondary=tasks_results)
+    messages = relationship("Message", secondary=tasks_results, backref="tasks")
 
     def __repr__(self):
         return f"{{Task: {self.client_id} - {self.status}}}"
