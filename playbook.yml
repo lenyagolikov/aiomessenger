@@ -1,0 +1,46 @@
+- hosts: localhost
+  tasks:
+    - name: Create docker network
+      docker_network:
+        name: app-network
+    - name: Run Postgres container
+      docker_container:
+        name: postgres
+        image: postgres:latest
+        network_mode: app-network
+        restart_policy: 'always'
+        state: 'started'
+        env:
+          POSTGRES_USER: "lenyagolikov"
+          POSTGRES_PASSWORD: "1234"
+          POSTGRES_DB: "messenger"
+    - name: Pause for 40 seconds
+      pause:
+        seconds: 40
+    - name: Run App-Messenger container
+      docker_container:
+        name: app-messenger
+        image: "{{ lookup('env', 'CI_REGISTRY_IMAGE') }}"
+        network_mode: app-network
+        restart_policy: 'always'
+        state: 'started'
+        env:
+          POSTGRES_USER: "lenyagolikov"
+          POSTGRES_PWD: "1234"
+          POSTGRES_DB: "messenger"
+          POSTGRES_HOSTS: "postgres"
+        ports:
+         - "8080:8080"
+    - name: Pause for 40 seconds
+      pause:
+        seconds: 40
+    - name: Check application
+      uri:
+        url: http://localhost:8080/ping_db
+    - name: docker logs
+      shell: 
+        docker logs app-messenger
+      register: app_logs
+    - name: print docker logs
+      ansible.builtin.debug:
+        var: app_logs

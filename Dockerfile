@@ -18,3 +18,4 @@ COPY --from=builder /usr/share/python3/app /usr/share/python3/app
 RUN ln -snf /usr/share/python3/app/bin/messenger-* /usr/local/bin/
 
 CMD ["sh", "-c", "messenger-db upgrade head; messenger-api"]
+
